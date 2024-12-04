@@ -3,14 +3,24 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class ValidationService {
 
-  // retourne si le mot est un palindrome ou non
-  isPalindrome(word: string): boolean {
-    if (!word) return false;
+    isValidEmail(email: string): boolean {
+      return typeof email === "string" &&
+        email.includes("@") && 
+        email.includes(".com")
+    }
 
-    const cleanedWord = word.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const reversedWord = cleanedWord.split('').reverse().join('');
+    isPalindrome(word: string): boolean {
+        if (typeof word !== 'string' || word.length === 0) {
+            throw new Error('Input must be a string');
+        }
+    
+        word = word.trim();
+    
+        const sanitized = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    
+        const reversed = sanitized.split('').reverse().join('');
 
-    return cleanedWord === reversedWord;
-  }
+        return sanitized === reversed;
+    }
       
 }

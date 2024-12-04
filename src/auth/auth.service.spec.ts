@@ -4,7 +4,7 @@ import { UserService } from '../user/user.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userService: UserService;
+  let userService: UserService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,6 +21,7 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
+    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
@@ -28,44 +29,42 @@ describe('AuthService', () => {
   });
 
   describe('validateUser', () => {
-
     it('should return true for valid username and password', () => {
-      // Arrange : user / mdp bon
-      jest.spyOn(userService, 'findUserByUsername').mockReturnValue({
-        username: 'validUser',
-        password: 'validPassword',
-      });
-
+      // Arrange
+      // const mockUser = { username: 'john', password: 'password123' };
+      jest.spyOn(userService, 'findUserByUsername').mockReturnValue({ username: 'john', password: 'password123' });
+  
       // Act
-      const result = service.validateUser('validUser', 'validPassword');
-
+      const isValid = service.validateUser('john', 'password123');
+  
       // Assert
-      expect(result).toBe(true);
-    });
-
-    it('should return false for valid username and invalid password', () => {
-      // Arrange : user bon / mdp mauvais
-      jest.spyOn(userService, 'findUserByUsername').mockReturnValue({
-        username: 'validUser',
-        password: 'validPassword',
-      });
-
+      expect(isValid).toBe(true);
+      expect(userService.findUserByUsername).toHaveBeenCalledWith('john');
+  });
+  
+    it('should return false for invalid password', () => {
+      // Arrange
+      const mockUser = { username: 'john', password: 'password123' };
+      jest.spyOn(userService, 'findUserByUsername').mockReturnValue(mockUser);
+  
       // Act
-      const result = service.validateUser('validUser', 'wrongPassword');
-
+      const isValid = service.validateUser('john', 'wrongpassword');
+  
       // Assert
-      expect(result).toBe(false);
+      expect(isValid).toBe(false);
+      expect(userService.findUserByUsername).toHaveBeenCalledWith('john');
     });
-
-    it('should return false if user does not exist', () => {
-      // Arrange : user n'existe pas
+  
+    it('should return false for non-existent username', () => {
+      // Arrange
       jest.spyOn(userService, 'findUserByUsername').mockReturnValue(null);
-
+  
       // Act
-      const result = service.validateUser('nonexistentUser', 'anyPassword');
-
+      const isValid = service.validateUser('unknown', 'password123');
+  
       // Assert
-      expect(result).toBe(false);
+      expect(isValid).toBe(false);
+      expect(userService.findUserByUsername).toHaveBeenCalledWith('unknown');
     });
   })
 });
